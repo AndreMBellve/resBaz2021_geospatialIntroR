@@ -22,7 +22,10 @@ library(ggspatial)
 #Interaction
 library(leaflet)
 
-# Exercise One Loading sf data --------------------------------------------
+# sf package --------------------------------------------------------------
+
+
+## Exercise One Loading sf data --------------------------------------------
 
 #Raster loaded with a relative path (relative to the working directory which is where ever the geospatialResBaz.proj file is)
 
@@ -31,13 +34,13 @@ library(leaflet)
 #2. Plot these data
 
 
-# Exercise Two - sf point data --------------------------------------------
+## Exercise Two - sf point data --------------------------------------------
 #1. Read in nz_coastlines shapefile data 
 
 
 #2. Plot these data
 
-# Exercise Three - ggspatial ----------------------------------------------
+## Exercise Three - ggspatial ----------------------------------------------
 #1. Add to your map:
 #Scale bar
 #North arrow
@@ -52,7 +55,7 @@ library(leaflet)
 #note: ggsave smooths jagged lines
 
 
-# Exercise Four - Cropping ------------------------------------------------
+## Exercise Four - Cropping ------------------------------------------------
 #Defining a boundary box (a.k.a. extent)
 stew.bbox <- st_bbox(c(xmin = 1155000, #Boundaries
                        ymin = 4723000,  
@@ -71,7 +74,7 @@ stew.bbox <- st_bbox(c(xmin = 1155000, #Boundaries
 #plotting the cropped data
 
 
-# Exercise Five - Leaflet -------------------------------------------------
+## Exercise Five - Leaflet -------------------------------------------------
 
 #1. Read in the drosera.csv file (read.csv)
 
@@ -82,7 +85,10 @@ stew.bbox <- st_bbox(c(xmin = 1155000, #Boundaries
 #4. Open the viewer
 
 
-# Exercise Six - Loading Raster data --------------------------------------
+# terra package -----------------------------------------------------------
+
+
+## Exercise Six - Loading Raster data --------------------------------------
 #Raster loaded with a relative path 
 #1. Load the “precip_warmQtr.tif”  file assign it to the name precip
 
@@ -91,7 +97,7 @@ stew.bbox <- st_bbox(c(xmin = 1155000, #Boundaries
 #3.  Plot these raster data - gg won't well work here!
 
 
-# Exercise Seven - Stacks and Projections ---------------------------------
+## Exercise Seven - Stacks and Projections ---------------------------------
 #1. Combine the precip and temp_cold objects into a single object named rastStack
 
 #2. Load “elevation49.tif” (not elevation.tif!) and assign the name elev49
@@ -101,7 +107,7 @@ stew.bbox <- st_bbox(c(xmin = 1155000, #Boundaries
 #Is there a problem?
 
 
-# Exercise Eight - Raster Algebra -----------------------------------------
+## Exercise Eight - Raster Algebra -----------------------------------------
 #1. Load “temp_meanWarmQtr” and assign it to temp_warm 
 
 #2. Create a raster of the difference between temp_cold & temp_warm and assign it to temp_range
@@ -110,7 +116,10 @@ stew.bbox <- st_bbox(c(xmin = 1155000, #Boundaries
 #3. Combine these into a single stack called temps
 
 
-# Exercise Nine - rasterVis plotting --------------------------------------
+# Combing sf and terra! ---------------------------------------------------
+
+
+## Exercise Nine - rasterVis plotting --------------------------------------
 #1. Use levelplot() to plot temp_range
 
 #2. Add contours to the map
