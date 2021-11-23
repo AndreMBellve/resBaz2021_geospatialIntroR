@@ -1,0 +1,173 @@
+---
+title: "ResBaz Geospatial R Workshop (Empty)"
+output: html_notebook
+---
+
+Run me before the workshop and ensure no errors are produced!
+```{r Workshop setup}
+#Run me once (must undo # but replace after execution)
+#install.packages(c("dplyr", "terra", "sf", "rasterVis", "ggplot2", "ggspatial"))
+```
+
+
+```{r libraries}
+#Convenience package
+library(dplyr) #Piping and data manipulations
+
+#Geospatial manipulations
+library(sf) #Non-gridded data (point, polygon, line) manipulation
+library(terra) #Gridded (primarily) data manipulation
+ 
+#Mapping
+library(ggplot2) #sf plotting
+library(ggspatial) #mapping icons
+library(rasterVis) #raster plotting package
+```
+
+##sf package
+
+Note - many of the simple operations you can perform with sf can also be done with terra (see terra::vect() objects). However, sf is purpose built for simple features (points, lines and polygons) and is integrated with terra so the two can be used together!
+
+```{r Exercise One Loading sf data}
+#Shapefile loaded with a relative path (relative to the working directory which is where ever the geospatialResBaz.proj file is)
+
+#1. Read in nz_coastlines shapefile data 
+
+#2. Plot these data
+
+```
+
+```{r Exercise Two - sf point data}
+#1. Read in nz_coastlines shapefile data 
+
+
+#2. Plot these data
+
+```
+
+```{r Exercise Three - ggspatial}
+#1. Add to your map:
+#Scale bar
+#North arrow
+
+#Plotting sf data
+
+#Adding stuff to make the map pretty
+ 
+#North arrow
+
+#Saving the map ggsave?
+#note: ggsave smooths jagged lines
+
+```
+
+```{r Exercise Four - Cropping}
+#Defining a boundary box (a.k.a. extent)
+stew.bbox <- st_bbox(c(xmin = 1155000, #Boundaries
+                       ymin = 4723000,  
+                       xmax = 1285000, 
+                       ymax = 4820000), 
+                     class = "bbox", #What it is
+                     crs = 2193) #The ESPG code for the CRS
+
+#1. Crop NZ coastline and drosera data layer to match
+
+#Hint - crop these separately!
+#Cropping the points
+#Cropping the coastline
+
+
+#2. Plot the cropped sf objects
+#plotting the cropped data
+
+```
+
+```{r Exercise Five - Leaflet}
+
+#1. Read in the drosera.csv file (read.csv)
+
+#2.  Convert df to a leaflet object
+
+#3. Make the species as a pop-up value
+
+#4. Open the viewer
+
+
+```
+
+```{r Exercise Six - Loading Raster data}
+#Raster loaded with a relative path 
+#1. Load the “precip_warmQtr.tif”  file assign it to the name precip
+
+#2. Load the “temp_meanColdQtr.tif” and assign it to temp_cold 
+
+#3.  Plot these raster data - gg won't well work here!
+
+```
+
+
+
+
+```{r Exercise Seven - Stacks and Projections}
+#1. Combine the precip and temp_cold objects into a single object named rastStack
+
+#2. Load “elevation49.tif” (not elevation.tif!) and assign the name elev49
+
+
+#3. Try to add the elev49 object to rastStack
+
+#Is there a problem?
+
+
+```
+
+```{r Exercise Eight - Raster Algebra}
+#1. Load “temp_meanWarmQtr” and assign it to temp_warm 
+
+#2. Create a raster of the difference between temp_cold & temp_warm and assign it to temp_range
+
+
+#3. Combine these into a single stack called temps
+
+```
+
+```{r Exercise Nine - rasterVis plotting}
+#1. Use levelplot() to plot temp_range
+
+#2. Add contours to the map
+
+#3. Use gplot to plot a single layer
+
+```
+
+```{r - Example of analysis }
+## Example of simple analysis ------------------------------------------------------------
+#Getting a background sample
+clim.bg <- spatSample(rastStack, 10000) %>% 
+  mutate(species = "Background")
+
+#Pulling the sf data
+drosera.df2 <- drosera.sf %>%
+  st_coordinates() %>% #
+  as.data.frame() %>% 
+  rename("longitude" = X , "latitude" = Y) 
+
+clim.all <- terra::extract(rastStack, 
+                           drosera.df2)[,-1] %>%
+  bind_cols(species = as.character(drosera.sf$species)) %>% 
+  bind_rows(clim.bg)                                )))
+
+ggplot(clim.all,
+       aes(y = precip_warmQtr,
+           x = temp_meanColdQtr,
+           colour = species)) +
+  geom_point(data = filter(clim.all, 
+                           species == "Background"),
+             alpha = 0.4) +
+  geom_point(data = filter(clim.all, 
+                           species != "Background"),
+             alpha = 0.6) +
+  scale_colour_manual(values = c("grey", "#802028", "#586880")) +
+  theme_minimal()
+
+```

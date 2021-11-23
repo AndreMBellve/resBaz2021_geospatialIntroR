@@ -1,0 +1,299 @@
+---
+title: "ResBaz Geospatial R Workshop"
+output: html_notebook
+---
+
+Run me before the workshop and ensure no errors are produced!
+```{r Workshop setup}
+#Run me once (must undo # but replace after execution)
+#install.packages(c("dplyr", "terra", "sf", "rasterVis", "ggplot2", "ggspatial"))
+```
+
+
+```{r libraries}
+#Convenience package
+library(dplyr) #Piping and data manipulations
+
+#Geospatial manipulations
+library(sf) #Non-gridded data (point, polygon, line) manipulation
+library(terra) #Gridded (primarily) data manipulation
+ 
+#Mapping
+library(ggplot2) #sf plotting
+library(ggspatial) #mapping icons
+library(rasterVis) #Raster plotting package
+```
+
+##sf package
+
+Note - many of the simple operations you can perform with sf can also be done with terra (see terra::vect() objects). However, sf is purpose built for simple features (points, lines and polygons) and is integrated with terra so the two can be used together!
+
+```{r Exercise One Loading sf data}
+#Raster loaded with a relative path (relative to the working directory which is where ever the geospatialResBaz.proj file is)
+
+#1. Read in nz_coastlines shapefile data 
+nz.sf <-  st_read("./data/polygons/nz_coastlines/nz_coastlines.shp")
+
+#2. Plot these data
+#Plotting
+ggplot() +
+  geom_sf(data = nz.sf) #sf plots sf objects and "data =.." is necessary!
+
+#OR
+plot(nz.sf)
+```
+
+```{r Exercise Two - sf point data}
+#1. Read in nz_coastlines shapefile data 
+#Reading in the data
+drosera.sf <-  st_read("./data/point_data/drosera/drosera.shp") %>% 
+  st_transform(2193)
+
+
+#2. Plot these data
+#Plotting the data together
+ggplot() +
+  geom_sf(data = nz.sf) +
+  geom_sf(data = drosera.sf, 
+          aes(colour = species),
+          alpha = 0.5)
+```
+
+```{r Exercise Three - ggspatial}
+#1. Add to your map:
+#Scale bar
+#North arrow
+
+#Plotting sf data
+ggplot() +
+  geom_sf(data = nz.sf) +
+  geom_sf(data = drosera.sf, 
+          aes(colour = species), alpha = 0.5) +
+  #Adding stuff to make the map pretty
+  annotation_scale(location = "br") + #Scale
+  annotation_north_arrow(location = "tl", 
+                         which_north = "true", 
+                         style = north_arrow_fancy_orienteering) + #North arrow
+  theme_minimal() #Looks nice..
+
+#Saving the map
+ggsave("./graphs/exampleMap.png")
+#note: ggsave smooths jagged lines
+```
+
+```{r Exercise Four - Cropping}
+
+#Defining a boundary box (a.k.a. extent)
+stew.bbox <- st_bbox(c(xmin = 1155000, #Boundaries
+                       ymin = 4723000,  
+                       xmax = 1285000, 
+                       ymax = 4820000), 
+                     class = "bbox", #What it is
+                     crs = 2193) #The ESPG code for the CRS
+
+#1. Crop NZ coastline and drosera data layer to match
+#Cropping the points
+dros_stewart.sf <- st_crop(drosera.sf, stew.bbox)
+
+#Cropping the coastline
+coast_stewart.sf <- st_crop(nz.sf, stew.bbox)
+
+#2. Plot the cropped sf objects
+#plotting the cropped data
+ggplot() + 
+  geom_sf(data = coast_stewart.sf) + 
+  geom_sf(data = dros_stewart.sf, 
+          aes(colour = species))
+
+```
+
+```{r Exercise Five - Leaflet}
+
+#1. Read in the drosera.csv file (read.csv)
+#Reading in csv data
+drosera.df <- read.csv("./data/point_data/drosera.csv")
+
+#2.  Convert df to a leaflet object
+#To show
+head(drosera.df)
+
+#3. Make the species as a pop-up value
+#Using leaflet
+drosera.leaf <- leaflet(drosera.df) %>%
+  addTiles() %>% 
+  addCircleMarkers(lng = ~long, 
+                   lat = ~lat, 
+                   popup = ~species)
+
+#4. Open the viewer
+drosera.leaf
+
+```
+
+```{r Exercise Six - Loading Raster data}
+#1. Load the “precip_warmQtr.tif”  file assign it to the name precip
+#Raster loaded with a relative path 
+precip <- rast("./data/rasters/precip_warmQtr.tif") 
+
+#2. Load the “temp_meanColdQtr.tif” and assign it to temp_cold 
+temp_cold <- rast("./data/rasters/temp_meanColdQtr.tif")
+
+#3.  Plot these raster data
+#Plotting
+plot(precip)
+plot(temp_cold)
+
+```
+
+
+
+
+```{r Exercise Seven - Stacks and Projections}
+#1. Combine the precip and temp_cold objects into a single object named rastStack
+#Combining two rasters
+rastStack <- c(precip, temp_cold)
+
+# rastStack <-  rast(c("./data/rasters/precip_warmQtr.tif", 
+#                        "./data/rasters/temp_meanColdQtr.tif"))
+
+rastStack[[1]]
+rastStack[["precip_warmQtr"]]
+
+#2. Load “elevation49.tif” (not elevation.tif!) and assign the name elev49
+#Reading in elev49
+elev49 <- rast("./data/rasters/elevation49.tif")
+
+#3. Try to add the elev49 object to rastStack
+#Trying to add
+rastStack <- c(rastStack, elev49)
+
+#Reprojecting
+
+#This process can take a few minutes - more for large files!
+
+elev <- project(elev, #Problem raster
+                rastStack, #Target raster
+                filename = "./data/rasters/elev.tif", #This will write it as a new tif file
+                overwrite = TRUE) #Allows files with the same name to be over-written
+
+#If processing is too slow.
+elev <- rast("./data/rasters/elevation.tif")
+
+#Adding them all together in a single stack
+rastStack <- c(rastStack, elev)
+
+
+```
+
+```{r Exercise Eight - Raster Algebra}
+#1. Load “temp_meanWarmQtr” and assign it to temp_warm 
+#Reading in the new layer
+temp_warm <- rast("./data/rasters/temp_meanWarmQtr.tif")
+
+#2. Create a raster of the difference between temp_cold & temp_warm and assign it to temp_range
+temp_range <-  temp_warm - temp_cold
+plot(temp_range)
+
+#3. Combine these into a single stack called temps
+#Combining data
+temps <- c(temp_warm, temp_cold, temp_range)
+
+#Extra stuff as an example
+#This create a raster of TRUE/FALSE (coded as 0 and 1) showing the cells that have a value as less than 10 as true
+temp_range.lt10 <- temp_range < 10
+plot(temp_range.lt10)
+
+```
+
+```{r Exercise Nine - rasterVis plotting}
+#1. Use levelplot() to plot temp_range
+levelplot(temp_range)
+
+#2. Add contours to the map
+levelplot(temp_range, contour = TRUE)
+
+#3. Use gplot to plot a single layer
+#rasterVis plotting 1
+gplot(temp_range) +
+  geom_raster(aes(fill = value)) +
+  facet_wrap(~variable) +
+  scale_fill_viridis_c(option = "magma", 
+                      na.value = "transparent") +
+  coord_equal()
+
+#Extra goodies!!!
+
+#patchwork
+#Multiple plots with varying axes
+p1 <- gplot(rastStack[[1]]) +
+  geom_raster(aes(fill = value)) +
+  scale_fill_viridis_c(option = "magma", 
+                       na.value = "transparent",
+                       name = names(rastStack[[1]])) +
+  coord_equal()
+
+p2 <- gplot(rastStack[[2]]) +
+  geom_raster(aes(fill = value)) +
+  scale_fill_viridis_c(option = "viridis", 
+                       na.value = "transparent",
+                       name = names(rastStack[[2]])) +
+  coord_equal() 
+
+
+p3 <- gplot(rastStack[[3]]) +
+  geom_raster(aes(fill = value)) +
+  scale_fill_viridis_c(option = "cividis", 
+                       na.value = "transparent",
+                       name = names(rastStack[[1]])) +
+  coord_equal() 
+
+#Plotting with patchwork
+p1 + p2 + p3
+
+#Plotting logical vectors
+gplot(temp_range.lt10) +      
+  geom_raster(aes(fill = as.logical(value))) +
+  scale_fill_manual(values = c('red', 'blue'), 
+                    na.value = "transparent", 
+                    name = "Diff < 10 °C") + 
+  labs(x = 'Longitude', y = 'Latitude') +
+  theme_minimal() +
+  coord_equal() 
+
+```
+
+```{r - Example of analysis }
+## Example of simple analysis ------------------------------------------------------------
+#Getting a background sample
+clim.bg <- spatSample(rastStack, 10000) %>% 
+  mutate(species = "Background")
+
+#Pulling the sf data
+drosera.df2 <- drosera.sf %>%
+  st_coordinates() %>% #
+  as.data.frame() %>% 
+  rename("longitude" = X , "latitude" = Y) 
+
+clim.all <- terra::extract(rastStack, 
+                           drosera.df2)[,-1] %>%
+  bind_cols(species = as.character(drosera.sf$species)) %>% 
+  bind_rows(clim.bg)                                )))
+
+ggplot(clim.all,
+       aes(y = precip_warmQtr,
+           x = temp_meanColdQtr,
+           colour = species)) +
+  geom_point(data = filter(clim.all, 
+                           species == "Background"),
+             alpha = 0.4) +
+  geom_point(data = filter(clim.all, 
+                           species != "Background"),
+             alpha = 0.6) +
+  scale_colour_manual(values = c("grey", "#802028", "#586880")) +
+  theme_minimal()
+
+```
+
+
+
+

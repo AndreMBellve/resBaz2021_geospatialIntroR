@@ -1,0 +1,43 @@
+Kia ora everyone,
+
+My name is André Bellvé and I am looking forward to seeing you at an Introduction to geospatial tools and manipulations in R.
+With the date for the workshop rapidly approaching (just over a week to go!) I thought I would send you an email to get you set up and ready.
+For this session you will need 4 things:
+
+1. Download this zip file (___) and extract the contents somewhere sensible on your pc.
+It contains all the data that you will be working with and is all bundled up in an RStudio project ready to go!
+The zipped files included are some geospatial data (.csv, .shp and .tif), Rmarkdown files, Rscripts and a R project, as well as some helpful pdf's.
+
+2. You will need to have installed base R (https://cran.stat.auckland.ac.nz/ - NZ download link) and preferably have version 4.1 or greater - I can't guarantee that everything will run smoothly if you have older versions!
+
+3. You will need to have RStudio (https://www.rstudio.com/products/rstudio/download/) installed. This third one is flexible but as we are working with an Rproject it will take care of setting the working directory for you.
+
+Once you have these installed, it would be great if you install the packages below before the session starts:
+install.packages(c("dplyr", "terra", "sf", "rasterVis", "ggplot2", "ggspatial"))
+You should just be able to run that ^ line (compilation not necessary if prompted).
+
+I would encourage you to do this before the day arrives as it will be a few hundred mb of downloads collectively and we may not be able to troubleshoot as well during the workshop!
+
+If number 2 & 3 are proving to be an obstacle for you, then you can alternatively create a RStudio Cloud services account (https://rstudio.cloud/ - the free version is fine!) and work directly from this, but it might take a little longer to process things.
+
+If you encounter any trouble with any of this, please feel free to email me or post something in the  eResearch Center 2021 ResBaz community on the Centre for eResearch Slack channel. If you get really stuck I am happy to set up a zoom session to help you through it - just email me at abel122@aucklanduni.ac.nz
+
+As a reminder, this workshop assumes that you are are familiar with these R concepts:
+
+1.       Assignment (i.e.  x <- 3)
+
+2.       Functions/Arguments (e.g. the basics of what these are)
+
+3.       How to import data into R (e.g. myData <- read.csv("./data/myData.csv"))
+
+4.       Directories and the difference between absolute/relative paths (here is a helpful guide on paths if you aren’t familiar: https://ytakemon.github.io/2019-10-22-R-BCCRC/02-filedir/). For this workshop, we will be working with R projects and as such the working directory has already been set, and relative paths can be drawn from the directory with the .Rproj file.
+
+E.g. "./data/rasters/rasterFileName.tif"
+
+5.       Implicit v.s. explicit function calls (e.g. select v.s. dplyr::select)
+
+
+If all the above makes no sense, don't fear as it will be covered in the Introduction To R session that is being hosted on Monday and Tuesday afternoon! If you are no longer able to make a session, please cancel your ticket so that someone on the waiting list can join the session. We can still send you a post-session recording if you add yourself to the waiting list. We want to ensure ResBaz is welcoming and inclusive of people of all stages of learning and backgrounds: Code of Conduct here. If you have any questions or concerns during the event, contact researchdata@auckland.ac.nz.See you all next week!
+
+
+André Bellvé and the ResBaz Team
