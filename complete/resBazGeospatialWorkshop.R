@@ -124,7 +124,7 @@ rastStack[[1]]
 rastStack[["precip_warmQtr"]]
 
 #Reading in elev49
-elev49 <- rast("./data/rasters/elevation49.tif")
+elev49 <- rast("./data/rasters/elevation_49.tif")
 
 #Trying to add
 rastStack <- c(rastStack, elev49)
