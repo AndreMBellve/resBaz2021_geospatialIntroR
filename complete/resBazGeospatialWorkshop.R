@@ -24,6 +24,8 @@ library(leaflet)
 #Reading in the data (path relative to the working directory which is where ever the geospatialResBaz.proj file is)
 nz.sf <-  st_read("./data/polygons/nz_coastlines/nz_coastlines.shp")
 
+nz.sf
+
 #Plotting
 ggplot() +
   geom_sf(data = nz.sf) #sf plots sf objects
@@ -215,7 +217,7 @@ gplot(temp_range.lt10) +
   coord_equal() 
 
 
-## Example of simple analysis ------------------------------------------------------------
+## Example of basic analysis ------------------------------------------------------------
 #Getting a background sample
 clim.bg <- spatSample(rastStack, 10000) %>% 
   mutate(species = "Background")
@@ -229,8 +231,8 @@ drosera.df2 <- drosera.sf %>%
 clim.all <- terra::extract(rastStack, 
                            drosera.df2)[,-1] %>%
   bind_cols(species = as.character(drosera.sf$species)) %>% 
-  bind_rows(clim.bg) #%>% 
-# mutate(species = factor(species, levels = c("Drosera binata", "Drosera spatulata", "Background"                                 )))
+  bind_rows(clim.bg)
+
 
 ggplot(clim.all,
        aes(y = precip_warmQtr,
@@ -242,8 +244,13 @@ ggplot(clim.all,
   geom_point(data = filter(clim.all, 
                            species != "Background"),
              alpha = 0.6) +
-  scale_colour_manual(values = c("grey", "#802028", "#586880")) +
+  scale_colour_manual(values = c("grey", "#802028", "#586880"), name = "Species") +
+  labs(y = "Precipitation of the Warmest Quarter (mm)", x = "Temperature of the Coldest Quarter (C°)") +
   theme_minimal()
+
+#Saving
+ggsave("./graphs/exampleDroseraPlot.png", width = 7.6, height = 5.2)
+
 
 # Extra code --------------------------------------------------------------
 
@@ -269,9 +276,6 @@ plot(tempCrop)
 
 
 # Workshop material prep --------------------------------------------------
-
-
-
 #Pulling data
 xx <- rgbif::occ_search(scientificName = c("Drosera binata",
                                            "Drosera spatulata"),
@@ -308,30 +312,10 @@ drosera.df <- drosera.sf %>%
 write.csv(drosera.df, "./data/point_data/drosera.csv")
 
 
-#Plotting with points
-ggplot() +
-  geom_sf(data = nz.sf) +
-  geom_sf(data = drosera.sf, aes(colour = species)) +
-  coord_sf(crs = st_crs(2193)) +
-  annotation_scale(location = "br") +
-  annotation_north_arrow(location = "tl",
-                         which_north = "true",
-                         style = north_arrow_fancy_orienteering)
 
 
 
 
-
-
-ggplot() +
-  geom_sf(data = veg.sf, ) +
-  scale_size_identity() +
-  theme_minimal() +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank())
-
-
-ggsave("./graphs/nzGrey.png")
 
 
 

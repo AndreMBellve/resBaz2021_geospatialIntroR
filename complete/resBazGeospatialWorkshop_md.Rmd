@@ -23,11 +23,10 @@ library(ggplot2) #sf plotting
 library(ggspatial) #mapping icons
 library(rasterVis) #Raster plotting package
 ```
-
-##sf package
-
 Note - many of the simple operations you can perform with sf can also be done with terra (see terra::vect() objects). However, sf is purpose built for simple features (points, lines and polygons) and is integrated with terra so the two can be used together!
 
+##sf package
+###Exercise One
 ```{r Exercise One Loading sf data}
 #Raster loaded with a relative path (relative to the working directory which is where ever the geospatialResBaz.proj file is)
 
@@ -43,6 +42,7 @@ ggplot() +
 plot(nz.sf)
 ```
 
+###Exercise Two
 ```{r Exercise Two - sf point data}
 #1. Read in nz_coastlines shapefile data 
 #Reading in the data
@@ -59,6 +59,7 @@ ggplot() +
           alpha = 0.5)
 ```
 
+###Exercise Three
 ```{r Exercise Three - ggspatial}
 #1. Add to your map:
 #Scale bar
@@ -81,6 +82,7 @@ ggsave("./graphs/exampleMap.png")
 #note: ggsave smooths jagged lines
 ```
 
+###Exercise Four
 ```{r Exercise Four - Cropping}
 
 #Defining a boundary box (a.k.a. extent)
@@ -107,6 +109,7 @@ ggplot() +
 
 ```
 
+###Exercise Five
 ```{r Exercise Five - Leaflet}
 
 #1. Read in the drosera.csv file (read.csv)
@@ -130,6 +133,9 @@ drosera.leaf
 
 ```
 
+##terra package
+
+###Exercise Six
 ```{r Exercise Six - Loading Raster data}
 #1. Load the “precip_warmQtr.tif”  file assign it to the name precip
 #Raster loaded with a relative path 
@@ -145,9 +151,7 @@ plot(temp_cold)
 
 ```
 
-
-
-
+###Exercise Seven
 ```{r Exercise Seven - Stacks and Projections}
 #1. Combine the precip and temp_cold objects into a single object named rastStack
 #Combining two rasters
@@ -185,6 +189,7 @@ rastStack <- c(rastStack, elev)
 
 ```
 
+###Exercise Eight
 ```{r Exercise Eight - Raster Algebra}
 #1. Load “temp_meanWarmQtr” and assign it to temp_warm 
 #Reading in the new layer
@@ -205,6 +210,7 @@ plot(temp_range.lt10)
 
 ```
 
+###Exercise Nine 
 ```{r Exercise Nine - rasterVis plotting}
 #1. Use levelplot() to plot temp_range
 levelplot(temp_range)
@@ -262,8 +268,8 @@ gplot(temp_range.lt10) +
 
 ```
 
+##Terra and sf combine!
 ```{r - Example of analysis }
-## Example of simple analysis ------------------------------------------------------------
 #Getting a background sample
 clim.bg <- spatSample(rastStack, 10000) %>% 
   mutate(species = "Background")
@@ -277,7 +283,8 @@ drosera.df2 <- drosera.sf %>%
 clim.all <- terra::extract(rastStack, 
                            drosera.df2)[,-1] %>%
   bind_cols(species = as.character(drosera.sf$species)) %>% 
-  bind_rows(clim.bg)                                )))
+  bind_rows(clim.bg)
+
 
 ggplot(clim.all,
        aes(y = precip_warmQtr,
@@ -289,8 +296,12 @@ ggplot(clim.all,
   geom_point(data = filter(clim.all, 
                            species != "Background"),
              alpha = 0.6) +
-  scale_colour_manual(values = c("grey", "#802028", "#586880")) +
+  scale_colour_manual(values = c("grey", "#802028", "#586880"), name = "Species") +
+  labs(y = "Precipitation of the Warmest Quarter (mm)", x = "Temperature of the Coldest Quarter (C°)") +
   theme_minimal()
+
+#Saving
+ggsave("./graphs/exampleDroseraPlot.png", width = 7.6, height = 5.2)
 
 ```
 

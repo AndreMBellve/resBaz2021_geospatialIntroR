@@ -4,7 +4,7 @@ My name is André Bellvé and I am looking forward to seeing you at an Introduct
 With the date for the workshop rapidly approaching (just over a week to go!) I thought I would send you an email to get you set up and ready.
 For this session you will need 4 things:
 
-1. Download this zip file (___) and extract the contents somewhere sensible on your pc.
+1. Download this zip file (https://auckland.figshare.com/articles/dataset/Introduction_to_Geospatial_Data_in_R_ResBaz_2021/17021726) and extract the contents somewhere sensible on your pc.
 It contains all the data that you will be working with and is all bundled up in an RStudio project ready to go!
 The zipped files included are some geospatial data (.csv, .shp and .tif), Rmarkdown files, Rscripts and a R project, as well as some helpful pdf's.
 

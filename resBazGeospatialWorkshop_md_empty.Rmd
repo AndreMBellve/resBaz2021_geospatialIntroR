@@ -24,19 +24,25 @@ library(ggspatial) #mapping icons
 library(rasterVis) #raster plotting package
 ```
 
-##sf package
-
 Note - many of the simple operations you can perform with sf can also be done with terra (see terra::vect() objects). However, sf is purpose built for simple features (points, lines and polygons) and is integrated with terra so the two can be used together!
 
+##sf package
+###Exercise One
 ```{r Exercise One Loading sf data}
 #Shapefile loaded with a relative path (relative to the working directory which is where ever the geospatialResBaz.proj file is)
 
 #1. Read in nz_coastlines shapefile data 
-
+new.sf <- st_read("./data/polygons/native_veg/native_veg.shp")
+nz.sf <-  st_read("./data/polygons/nz_coastlines/nz_coastlines.shp")
 #2. Plot these data
+plot(nz.sf)
+
+ggplot() + 
+  geom_sf(data = nz.sf)
 
 ```
 
+###Exercise Two
 ```{r Exercise Two - sf point data}
 #1. Read in nz_coastlines shapefile data 
 
@@ -45,6 +51,7 @@ Note - many of the simple operations you can perform with sf can also be done wi
 
 ```
 
+###Exercise Three
 ```{r Exercise Three - ggspatial}
 #1. Add to your map:
 #Scale bar
@@ -61,6 +68,7 @@ Note - many of the simple operations you can perform with sf can also be done wi
 
 ```
 
+###Exercise Four
 ```{r Exercise Four - Cropping}
 #Defining a boundary box (a.k.a. extent)
 stew.bbox <- st_bbox(c(xmin = 1155000, #Boundaries
@@ -82,6 +90,7 @@ stew.bbox <- st_bbox(c(xmin = 1155000, #Boundaries
 
 ```
 
+###Exercise Five
 ```{r Exercise Five - Leaflet}
 
 #1. Read in the drosera.csv file (read.csv)
@@ -95,6 +104,8 @@ stew.bbox <- st_bbox(c(xmin = 1155000, #Boundaries
 
 ```
 
+##terra package
+###Exercise Six
 ```{r Exercise Six - Loading Raster data}
 #Raster loaded with a relative path 
 #1. Load the “precip_warmQtr.tif”  file assign it to the name precip
@@ -105,9 +116,7 @@ stew.bbox <- st_bbox(c(xmin = 1155000, #Boundaries
 
 ```
 
-
-
-
+###Exercise Seven
 ```{r Exercise Seven - Stacks and Projections}
 #1. Combine the precip and temp_cold objects into a single object named rastStack
 
@@ -121,6 +130,7 @@ stew.bbox <- st_bbox(c(xmin = 1155000, #Boundaries
 
 ```
 
+###Exercise Eight
 ```{r Exercise Eight - Raster Algebra}
 #1. Load “temp_meanWarmQtr” and assign it to temp_warm 
 
@@ -131,6 +141,7 @@ stew.bbox <- st_bbox(c(xmin = 1155000, #Boundaries
 
 ```
 
+###Exercise Nine
 ```{r Exercise Nine - rasterVis plotting}
 #1. Use levelplot() to plot temp_range
 
@@ -140,6 +151,7 @@ stew.bbox <- st_bbox(c(xmin = 1155000, #Boundaries
 
 ```
 
+##Terra and sf combine!
 ```{r - Example of analysis }
 ## Example of simple analysis ------------------------------------------------------------
 #Getting a background sample
