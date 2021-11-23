@@ -1,6 +1,8 @@
 ---
 title: "ResBaz Geospatial R Workshop"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 Run me before the workshop and ensure no errors are produced!
@@ -31,7 +33,7 @@ Note - many of the simple operations you can perform with sf can also be done wi
 #Raster loaded with a relative path (relative to the working directory which is where ever the geospatialResBaz.proj file is)
 
 #1. Read in nz_coastlines shapefile data 
-nz.sf <-  st_read("./data/polygons/nz_coastlines/nz_coastlines.shp")
+nz.sf <-  st_read("../data/polygons/nz_coastlines/nz_coastlines.shp")
 
 #2. Plot these data
 #Plotting
@@ -46,7 +48,7 @@ plot(nz.sf)
 ```{r Exercise Two - sf point data}
 #1. Read in nz_coastlines shapefile data 
 #Reading in the data
-drosera.sf <-  st_read("./data/point_data/drosera/drosera.shp") %>% 
+drosera.sf <-  st_read("../data/point_data/drosera/drosera.shp") %>% 
   st_transform(2193)
 
 
@@ -78,7 +80,7 @@ ggplot() +
   theme_minimal() #Looks nice..
 
 #Saving the map
-ggsave("./graphs/exampleMap.png")
+ggsave("../graphs/exampleMap.png")
 #note: ggsave smooths jagged lines
 ```
 
@@ -114,7 +116,7 @@ ggplot() +
 
 #1. Read in the drosera.csv file (read.csv)
 #Reading in csv data
-drosera.df <- read.csv("./data/point_data/drosera.csv")
+drosera.df <- read.csv("../data/point_data/drosera.csv")
 
 #2.  Convert df to a leaflet object
 #To show
@@ -139,10 +141,10 @@ drosera.leaf
 ```{r Exercise Six - Loading Raster data}
 #1. Load the “precip_warmQtr.tif”  file assign it to the name precip
 #Raster loaded with a relative path 
-precip <- rast("./data/rasters/precip_warmQtr.tif") 
+precip <- rast("../data/rasters/precip_warmQtr.tif") 
 
 #2. Load the “temp_meanColdQtr.tif” and assign it to temp_cold 
-temp_cold <- rast("./data/rasters/temp_meanColdQtr.tif")
+temp_cold <- rast("../data/rasters/temp_meanColdQtr.tif")
 
 #3.  Plot these raster data
 #Plotting
@@ -157,15 +159,15 @@ plot(temp_cold)
 #Combining two rasters
 rastStack <- c(precip, temp_cold)
 
-# rastStack <-  rast(c("./data/rasters/precip_warmQtr.tif", 
-#                        "./data/rasters/temp_meanColdQtr.tif"))
+# rastStack <-  rast(c("../data/rasters/precip_warmQtr.tif", 
+#                        "../data/rasters/temp_meanColdQtr.tif"))
 
 rastStack[[1]]
 rastStack[["precip_warmQtr"]]
 
 #2. Load “elevation49.tif” (not elevation.tif!) and assign the name elev49
 #Reading in elev49
-elev49 <- rast("./data/rasters/elevation49.tif")
+elev49 <- rast("../data/rasters/elevation49.tif")
 
 #3. Try to add the elev49 object to rastStack
 #Trying to add
@@ -177,11 +179,11 @@ rastStack <- c(rastStack, elev49)
 
 elev <- project(elev, #Problem raster
                 rastStack, #Target raster
-                filename = "./data/rasters/elev.tif", #This will write it as a new tif file
+                filename = "../data/rasters/elev.tif", #This will write it as a new tif file
                 overwrite = TRUE) #Allows files with the same name to be over-written
 
 #If processing is too slow.
-elev <- rast("./data/rasters/elevation.tif")
+elev <- rast("../data/rasters/elevation.tif")
 
 #Adding them all together in a single stack
 rastStack <- c(rastStack, elev)
@@ -193,7 +195,7 @@ rastStack <- c(rastStack, elev)
 ```{r Exercise Eight - Raster Algebra}
 #1. Load “temp_meanWarmQtr” and assign it to temp_warm 
 #Reading in the new layer
-temp_warm <- rast("./data/rasters/temp_meanWarmQtr.tif")
+temp_warm <- rast("../data/rasters/temp_meanWarmQtr.tif")
 
 #2. Create a raster of the difference between temp_cold & temp_warm and assign it to temp_range
 temp_range <-  temp_warm - temp_cold
@@ -301,7 +303,7 @@ ggplot(clim.all,
   theme_minimal()
 
 #Saving
-ggsave("./graphs/exampleDroseraPlot.png", width = 7.6, height = 5.2)
+ggsave("../graphs/exampleDroseraPlot.png", width = 7.6, height = 5.2)
 
 ```
 
