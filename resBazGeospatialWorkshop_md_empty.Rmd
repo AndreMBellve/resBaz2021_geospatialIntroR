@@ -32,13 +32,9 @@ Note - many of the simple operations you can perform with sf can also be done wi
 #Shapefile loaded with a relative path (relative to the working directory which is where ever the geospatialResBaz.proj file is)
 
 #1. Read in nz_coastlines shapefile data 
-new.sf <- st_read("./data/polygons/native_veg/native_veg.shp")
-nz.sf <-  st_read("./data/polygons/nz_coastlines/nz_coastlines.shp")
-#2. Plot these data
-plot(nz.sf)
 
-ggplot() + 
-  geom_sf(data = nz.sf)
+#2. Plot these data
+
 
 ```
 
