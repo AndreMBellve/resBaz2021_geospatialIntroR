@@ -4,6 +4,24 @@
 
 #Packages to install - only needs to be run once!
 #install.packages(c("dplyr", "terra", "sf", "rasterVis", "ggplot2", "ggspatial"))
+
+
+# Libraries ---------------------------------------------------------------
+#Convenience package
+library(dplyr) #Piping
+
+#Geospatial manipulations
+library(terra) #Gridded data (primarily) 
+library(sf) #Non-gridded data (point, polygon, line) 
+
+#Mapping
+library(rasterVis)
+library(ggplot2)
+library(ggspatial)
+
+#Interaction
+library(leaflet)
+
 # Exercise One Loading sf data --------------------------------------------
 
 #Raster loaded with a relative path (relative to the working directory which is where ever the geospatialResBaz.proj file is)
