@@ -124,7 +124,7 @@ rastStack[[1]]
 rastStack[["precip_warmQtr"]]
 
 #Reading in elev49
-elev49 <- rast("./data/rasters/elevation_49.tif")
+elev49 <- rast("./data/rasters/elevation49.tif")
 
 #Trying to add
 rastStack <- c(rastStack, elev49)
@@ -133,9 +133,9 @@ rastStack <- c(rastStack, elev49)
 
 #This process can take a few minutes - more for large files!
 
-elev49 <- project(elev49, #Problem raster
-                  rastStack, #Target raster
-                filename = "./data/rasters/elev49.tif", #This will write it as a new tif file
+elev <- project(elev49, #Problem raster
+                rastStack, #Target raster
+                filename = "./data/rasters/elevation_new.tif", #This will write it as a new tif file
                 overwrite = TRUE) #Allows files with the same name to be over-written
 
 #If processing is too slow.
@@ -179,6 +179,7 @@ gplot(temp_range) +
   coord_equal()
 
 #patchwork
+library(patchwork)
 #Multiple plots with varying axes
 p1 <- gplot(rastStack[[1]]) +
   geom_raster(aes(fill = value)) +
@@ -219,37 +220,38 @@ gplot(temp_range.lt10) +
 
 ## Example of basic analysis ------------------------------------------------------------
 #Getting a background sample
-clim.bg <- spatSample(rastStack, 10000) %>% 
+clim.bg <- spatSample(temps, 10000) %>% 
   mutate(species = "Background")
 
 #Pulling the sf data
-drosera.df2 <- drosera.sf %>%
-  st_coordinates() %>% #
-  as.data.frame() %>% 
-  rename("longitude" = X , "latitude" = Y) 
+drosera.df2 <- drosera.sf %>% #Starting with my sf object I loaded from a shapefile
+  st_coordinates() %>% #Extracting the coordinates I want
+  as.data.frame() %>% #Converting to a dataframe
+  rename("longitude" = X , "latitude" = Y) #Renaming the columns for clarity
 
-clim.all <- terra::extract(rastStack, 
-                           drosera.df2)[,-1] %>%
-  bind_cols(species = as.character(drosera.sf$species)) %>% 
-  bind_rows(clim.bg)
+#Prepping the data 
+clim.all <- terra::extract(temps, 
+                           drosera.df2)[,-1] %>% #Pulling the values for each point from the rasters
+  bind_cols(species = as.character(drosera.sf$species)) %>% #Adding on the species data I had so I know which obs is for which species
+  bind_rows(clim.bg) #Adding on my background data
 
 
 ggplot(clim.all,
-       aes(y = precip_warmQtr,
+       aes(y = temp_meanWarmQtr,
            x = temp_meanColdQtr,
-           colour = species)) +
+           colour = species)) + #Setting up the plot
+  
   geom_point(data = filter(clim.all, 
                            species == "Background"),
-             alpha = 0.4) +
+             alpha = 0.4) + #Plotting the background points
+  
   geom_point(data = filter(clim.all, 
                            species != "Background"),
-             alpha = 0.6) +
-  scale_colour_manual(values = c("grey", "#802028", "#586880"), name = "Species") +
-  labs(y = "Precipitation of the Warmest Quarter (mm)", x = "Temperature of the Coldest Quarter (C°)") +
-  theme_minimal()
-
-#Saving
-ggsave("./graphs/exampleDroseraPlot.png", width = 7.6, height = 5.2)
+             alpha = 0.6) + #Plotting my species points
+  
+  scale_colour_manual(values = c("grey", "#802028", "#586880"), name = "Species") + #Colouring!
+  
+  theme_minimal() #Because I like it.
 
 
 # Extra code --------------------------------------------------------------
@@ -277,6 +279,7 @@ plot(tempCrop)
 
 # Workshop material prep --------------------------------------------------
 #Pulling data
+library(rgbif)
 xx <- rgbif::occ_search(scientificName = c("Drosera binata",
                                            "Drosera spatulata"),
                         country = 'NZ',
@@ -302,6 +305,7 @@ drosera.sf <- drosera.df %>%
 
 st_write(drosera.sf, "./data/point_data/drosera.shp")
 
+#Converting back to a dataframe
 drosera.df <- drosera.sf %>% 
   st_transform(4326) %>% 
   st_coordinates() %>%
@@ -309,6 +313,7 @@ drosera.df <- drosera.sf %>%
   bind_cols(drosera.sf$species) %>% 
   rename(lat = Y, long = X, species = ..3)
 
+#Writing to file
 write.csv(drosera.df, "./data/point_data/drosera.csv")
 
 
